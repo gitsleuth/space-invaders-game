@@ -46,6 +46,7 @@ public class Spawn_Enemies : MonoBehaviour
                 double a = (i - (enemies + 1) * 0.5) * padding;
                 GameObject clone;
                 clone = Instantiate(enemy, new Vector3(spawn.transform.position.x + ((float)a), spawn.transform.position.y), enemy.transform.rotation);
+                clone.transform.localScale = new Vector3(1, 1, 1);
                 clones.Add(clone);
             }
         }
