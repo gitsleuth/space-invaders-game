@@ -6,15 +6,13 @@ public class Spawn_Enemies : MonoBehaviour
 {
     public GameObject enemy;
     public GameObject spawn;
+
     public int enemies = 4;
+    public List<GameObject> clones = new List<GameObject>();
 
     private float padding = 2;
-
     private int enemiesBefore;
-
     private bool spawned = false;
-
-    private List<GameObject> clones = new List<GameObject>();
 
     // Start is called before the first frame update
     void Start()
@@ -43,10 +41,10 @@ public class Spawn_Enemies : MonoBehaviour
 
             for (int i = 1; i < enemies + 1; i++)
             {
-                double a = (i - (enemies + 1) * 0.5) * padding;
+                double offset = (i - (enemies + 1) * 0.5) * padding;
                 GameObject clone;
-                clone = Instantiate(enemy, new Vector3(spawn.transform.position.x + ((float)a), spawn.transform.position.y), enemy.transform.rotation);
-                clone.transform.localScale = new Vector3(1, 1, 1);
+                clone = Instantiate(enemy, new Vector3(spawn.transform.position.x + ((float)offset), spawn.transform.position.y), enemy.transform.rotation);
+                clone.GetComponent<SpriteRenderer>().enabled = true;
                 clones.Add(clone);
             }
         }
