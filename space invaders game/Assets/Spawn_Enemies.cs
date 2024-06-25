@@ -10,7 +10,7 @@ public class Spawn_Enemies : MonoBehaviour
     public int enemiesPerRow = 6;
     public int rows = 3;
     public List<GameObject> clones = new List<GameObject>();
-    public int moveInterval = 1;
+    public int moveInterval = 4;
 
     private int padding = 2;
     private bool spawned = false;
@@ -84,7 +84,9 @@ public class Spawn_Enemies : MonoBehaviour
         {
             elapsed -= moveInterval;
 
+            moving = true;
             StartCoroutine(MoveEnemies());
+            print("Move enemies");
         };
     }
 
@@ -98,20 +100,23 @@ public class Spawn_Enemies : MonoBehaviour
             startPositions[i] = clones[i].transform.position;
         };
 
-        moving = true;
-
-        while (lerpElapsed < moveDuration)
+        bool moved = false;
+        while (!moved)
         {
-            for (int i = 0; i < numClones; i++)
+            if (lerpElapsed >= moveDuration)
             {
-                GameObject clone = clones[i];
+                moved = true;
+            } else
+            {
+                for (int i = 0; i < numClones; i++)
+                {
+                    GameObject clone = clones[i];
+                    Vector3 startPos = startPositions[i];
+                    clone.transform.position = Vector3.Lerp(startPos, startPos + Vector3.right * moveDistance, lerpElapsed / moveDuration);
+                };
+            }
 
-                Transform transform = clone.gameObject.transform;
-
-                Vector3 startPosition = startPositions[i];
-
-                transform.position = Vector3.Lerp(startPosition, startPosition + Vector3.right * moveDistance, lerpElapsed / moveDuration);
-            };
+            yield return null;
         }
 
         moving = false;
