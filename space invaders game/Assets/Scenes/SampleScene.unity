@@ -357,8 +357,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemy: {fileID: 1061627419}
   spawn: {fileID: 41770031}
-  enemies: 4
+  cam: {fileID: 519420031}
+  enemiesPerRow: 6
+  rows: 3
   clones: []
+  moveInterval: 1.5
 --- !u!4 &387814685
 Transform:
   m_ObjectHideFlags: 0

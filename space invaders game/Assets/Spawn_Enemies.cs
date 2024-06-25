@@ -6,11 +6,12 @@ public class Spawn_Enemies : MonoBehaviour
 {
     public GameObject enemy;
     public GameObject spawn;
+    public Camera cam;
 
     public int enemiesPerRow = 6;
     public int rows = 3;
     public List<GameObject> clones = new List<GameObject>();
-    public int moveInterval = 4;
+    public float moveInterval = 1.5f;
 
     private int padding = 2;
     private bool spawned = false;
@@ -22,6 +23,8 @@ public class Spawn_Enemies : MonoBehaviour
     private float lerpElapsed = 0;
     private float moveDuration = 0.5f;
     private bool moving = false;
+    private Vector3 direction = Vector3.right;
+    private Vector3 nextDirection;
 
     // Start is called before the first frame update
     void Start()
@@ -86,7 +89,6 @@ public class Spawn_Enemies : MonoBehaviour
 
             moving = true;
             StartCoroutine(MoveEnemies());
-            print("Move enemies");
         };
     }
 
@@ -101,6 +103,8 @@ public class Spawn_Enemies : MonoBehaviour
         };
 
         bool moved = false;
+        Vector3[] lastPositions = new Vector3[numClones];
+
         while (!moved)
         {
             if (lerpElapsed >= moveDuration)
@@ -112,13 +116,46 @@ public class Spawn_Enemies : MonoBehaviour
                 {
                     GameObject clone = clones[i];
                     Vector3 startPos = startPositions[i];
-                    clone.transform.position = Vector3.Lerp(startPos, startPos + Vector3.right * moveDistance, lerpElapsed / moveDuration);
+                    clone.transform.position = Vector3.Lerp(startPos, startPos + direction * moveDistance, lerpElapsed / moveDuration);
+                    lastPositions[i] = clone.transform.position;
                 };
             }
 
             yield return null;
         }
 
+        bool outOfBounds = false;
+
+        foreach (Vector3 lastPos in lastPositions)
+        {
+            if (IsOutOfBounds(lastPos))
+            {
+                outOfBounds = true;
+            };
+        };
+
+        if (outOfBounds)
+        {
+            if (nextDirection == Vector3.zero)
+            {
+                nextDirection = direction == Vector3.right ? Vector3.left : Vector3.right;
+                direction = Vector3.down;
+            }
+            else
+            {
+                direction = nextDirection;
+                nextDirection = Vector3.zero;
+            }
+        };
+
         moving = false;
+    }
+
+    bool IsOutOfBounds(Vector3 position)
+    {
+        Vector3 screenPos = cam.WorldToScreenPoint(position);
+        float x = screenPos.x;
+
+        return x > Screen.width || x < 0;
     }
 }
