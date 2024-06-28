@@ -33,44 +33,33 @@ public class Spawn_Enemies : MonoBehaviour
 
         enemiesPerRowBefore = enemiesPerRow;
         rowsBefore = rows;
+
+        SpawnEnemies();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (enemiesPerRowBefore != enemiesPerRow || rowsBefore != rows)
-        {
-            enemiesPerRowBefore = enemiesPerRow;
-            rowsBefore = rows;
-            enemies = enemiesPerRow * rows;
-            spawned = false;
+        //if (enemiesPerRowBefore != enemiesPerRow || rowsBefore != rows)
+        //{
+        //    enemiesPerRowBefore = enemiesPerRow;
+        //    rowsBefore = rows;
+        //    enemies = enemiesPerRow * rows;
+        //    spawned = false;
 
-            for (int i = clones.Count - 1; i >= 0; i--)
-            {
-                Destroy(clones[i]);
-                clones.RemoveAt(i);
-            };
-        }
+        //    foreach(GameObject clone in clones)
+        //    {
+        //        Destroy(clone);
+        //        clones.Remove(clone);
+        //    };
+        //}
 
-        if (!spawned)
-        {
-            spawned = true;
+        //if (!spawned)
+        //{
+        //    spawned = true;
 
-            int row = 0;
-
-            for (int i = 1; i < enemies + 1; i++)
-            {
-                float offset = ((i - row * enemiesPerRow) - (enemiesPerRow + 1) * 0.5f) * padding;
-                GameObject clone;
-                clone = Instantiate(enemy, new Vector3(spawn.transform.position.x + offset, spawn.transform.position.y - row * padding), enemy.transform.rotation);
-                clone.GetComponent<SpriteRenderer>().enabled = true;
-                clones.Add(clone);
-                if (i != enemies && i % enemiesPerRow == 0)
-                {
-                    row += 1;
-                }
-            }
-        }
+        //    SpawnEnemies();
+        //}
 
         elapsed += Time.deltaTime;
 
@@ -92,18 +81,35 @@ public class Spawn_Enemies : MonoBehaviour
         };
     }
 
+    void SpawnEnemies()
+    {
+        int row = 0;
+
+        for (int i = 1; i < enemies + 1; i++)
+        {
+            float offset = ((i - row * enemiesPerRow) - (enemiesPerRow + 1) * 0.5f) * padding;
+            GameObject clone;
+            clone = Instantiate(enemy, new Vector3(spawn.transform.position.x + offset, spawn.transform.position.y - row * padding), enemy.transform.rotation);
+            clone.GetComponent<SpriteRenderer>().enabled = true;
+            clones.Add(clone);
+            if (i != enemies && i % enemiesPerRow == 0)
+            {
+                row += 1;
+            }
+        }
+    }
+
     IEnumerator MoveEnemies()
     {
-        int numClones = clones.Count;
-        Vector3[] startPositions = new Vector3[numClones];
+        Vector3[] startPositions = new Vector3[clones.Count];
 
-        for (int i = 0; i < numClones; i++)
+        for (int i = 0; i < clones.Count; i++)
         {
             startPositions[i] = clones[i].transform.position;
         };
 
         bool moved = false;
-        Vector3[] lastPositions = new Vector3[numClones];
+        Vector3[] lastPositions = new Vector3[clones.Count];
 
         while (!moved)
         {

@@ -9,15 +9,16 @@ public class Controls : MonoBehaviour
     public int speed = 10;
     public float fireRate = 0.5f;
 
-    public GameObject bullet;
+    public GameObject gBullet;
 
     private List<GameObject> bullets = new List<GameObject>();
     private float elapsed = 0;
+    private List<GameObject> clones;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        clones = spawnEnemies.clones;
     }
 
     // Update is called once per frame
@@ -32,13 +33,13 @@ public class Controls : MonoBehaviour
         {
             GameObject bullet = bullets[i];
 
-            bullet.transform.position = bullet.transform.position + bullet.transform.up * speed * dt;
+            bullet.transform.position = bullet.transform.position + dt * speed * bullet.transform.up;
 
             Bounds bulletBounds = bullet.GetComponent<CircleCollider2D>().bounds;
 
-            for (int j = spawnEnemies.clones.Count - 1; j >= 0; j--)
+            for (int j = clones.Count - 1; j >= 0; j--)
             {
-                GameObject clone = spawnEnemies.clones[j];
+                GameObject clone = clones[j];
 
                 if (bulletBounds.Intersects(clone.GetComponent<BoxCollider2D>().bounds))
                 {
@@ -46,7 +47,7 @@ public class Controls : MonoBehaviour
                     bullets.RemoveAt(i);
 
                     Destroy(clone);
-                    spawnEnemies.clones.RemoveAt(j);
+                    clones.RemoveAt(i);
 
                     break;
                 }
@@ -62,7 +63,7 @@ public class Controls : MonoBehaviour
             if (Input.GetButton("Fire1"))
             {
                 GameObject clone;
-                clone = Instantiate(bullet, new Vector3(transform.position.x, bullet.transform.position.y), bullet.transform.rotation);
+                clone = Instantiate(gBullet, new Vector3(transform.position.x, gBullet.transform.position.y), gBullet.transform.rotation);
                 clone.GetComponent<SpriteRenderer>().enabled = true;
                 bullets.Add(clone);
             };
