@@ -14,11 +14,16 @@ public class Controls : MonoBehaviour
     private List<GameObject> bullets = new List<GameObject>();
     private float elapsed = 0;
     private List<GameObject> clones;
+    private Dictionary<GameObject, Vector3> startPositions;
+    private Dictionary<GameObject, Vector3> endPositions;
 
     // Start is called before the first frame update
     void Start()
     {
         clones = spawnEnemies.clones;
+
+        startPositions = spawnEnemies.startPositions;
+        endPositions = spawnEnemies.endPositions;
     }
 
     // Update is called once per frame
@@ -43,11 +48,22 @@ public class Controls : MonoBehaviour
 
                 if (bulletBounds.Intersects(clone.GetComponent<BoxCollider2D>().bounds))
                 {
-                    Destroy(bullet);
                     bullets.RemoveAt(i);
+                    Destroy(bullet);
+
+                    clones.RemoveAt(j);
+
+                    if (startPositions.ContainsKey(clone))
+                    {
+                        startPositions.Remove(clone);
+                    }
+
+                    if (endPositions.ContainsKey(clone))
+                    {
+                        endPositions.Remove(clone);
+                    }
 
                     Destroy(clone);
-                    clones.RemoveAt(i);
 
                     break;
                 }

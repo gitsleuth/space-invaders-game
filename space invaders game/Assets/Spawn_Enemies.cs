@@ -12,6 +12,8 @@ public class Spawn_Enemies : MonoBehaviour
     public int rows = 3;
     public List<GameObject> clones = new List<GameObject>();
     public float moveInterval = 1.5f;
+    public Dictionary<GameObject, Vector3> startPositions;
+    public Dictionary<GameObject, Vector3> endPositions;
 
     private int padding = 2;
     private bool spawned = false;
@@ -33,6 +35,9 @@ public class Spawn_Enemies : MonoBehaviour
 
         enemiesPerRowBefore = enemiesPerRow;
         rowsBefore = rows;
+
+        startPositions = new Dictionary<GameObject, Vector3>();
+        endPositions = new Dictionary<GameObject, Vector3>();
 
         SpawnEnemies();
     }
@@ -90,7 +95,12 @@ public class Spawn_Enemies : MonoBehaviour
             float offset = ((i - row * enemiesPerRow) - (enemiesPerRow + 1) * 0.5f) * padding;
             GameObject clone;
             clone = Instantiate(enemy, new Vector3(spawn.transform.position.x + offset, spawn.transform.position.y - row * padding), enemy.transform.rotation);
-            clone.GetComponent<SpriteRenderer>().enabled = true;
+            SpriteRenderer renderer = clone.GetComponent<SpriteRenderer>();
+            renderer.enabled = true;
+            if (i == enemies)
+            {
+                renderer.color = Color.red;
+            }
             clones.Add(clone);
             if (i != enemies && i % enemiesPerRow == 0)
             {
@@ -101,15 +111,13 @@ public class Spawn_Enemies : MonoBehaviour
 
     IEnumerator MoveEnemies()
     {
-        Vector3[] startPositions = new Vector3[clones.Count];
-
         for (int i = 0; i < clones.Count; i++)
         {
-            startPositions[i] = clones[i].transform.position;
+            GameObject clone = clones[i];
+            startPositions[clone] = clone.transform.position;
         };
 
         bool moved = false;
-        Vector3[] lastPositions = new Vector3[clones.Count];
 
         while (!moved)
         {
@@ -121,9 +129,9 @@ public class Spawn_Enemies : MonoBehaviour
                 for (int i = 0; i < clones.Count; i++)
                 {
                     GameObject clone = clones[i];
-                    Vector3 startPos = startPositions[i];
+                    Vector3 startPos = startPositions[clone];
                     clone.transform.position = Vector3.Lerp(startPos, startPos + direction * moveDistance, lerpElapsed / moveDuration);
-                    lastPositions[i] = clone.transform.position;
+                    endPositions[clone] = clone.transform.position;
                 };
             }
 
@@ -132,9 +140,9 @@ public class Spawn_Enemies : MonoBehaviour
 
         bool outOfBounds = false;
 
-        foreach (Vector3 lastPos in lastPositions)
+        foreach (Vector3 endPos in endPositions.Values)
         {
-            if (IsOutOfBounds(lastPos))
+            if (IsOutOfBounds(endPos))
             {
                 outOfBounds = true;
             };
