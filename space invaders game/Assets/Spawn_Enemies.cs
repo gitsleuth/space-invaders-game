@@ -112,7 +112,7 @@ public class Spawn_Enemies : MonoBehaviour
                 moved = true;
             } else
             {
-                for (int i = 0; i < numClones; i++)
+                for (int i = 0; i < clones.Count; i++)
                 {
                     GameObject clone = clones[i];
                     Vector3 startPos = startPositions[i];

@@ -47,6 +47,8 @@ public class Controls : MonoBehaviour
 
                     Destroy(clone);
                     spawnEnemies.clones.RemoveAt(j);
+
+                    break;
                 }
             }
         }
