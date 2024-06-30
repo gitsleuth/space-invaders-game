@@ -12,9 +12,10 @@ public class Spawn_Asteroids : MonoBehaviour
     private Transform asteroidTrans;
     private float asteroidY;
     private Quaternion asteroidRot;
-    private float sectionWidth;
+    private float screenWidth = Screen.width;
     private int beforeNumAsteroids;
     private List<GameObject> asteroids = new List<GameObject>();
+    private float asteroidWidth;
 
     // Start is called before the first frame update
     void Start()
@@ -22,7 +23,7 @@ public class Spawn_Asteroids : MonoBehaviour
         asteroidTrans = asteroid.transform;
         asteroidY = asteroidTrans.position.y;
         asteroidRot = asteroidTrans.rotation;
-        sectionWidth = Screen.width / (numAsteroids + 1);
+        asteroidWidth = asteroidTrans.localScale.x;
     }
 
     // Update is called once per frame
@@ -37,8 +38,6 @@ public class Spawn_Asteroids : MonoBehaviour
 
             if (numAsteroids > 0)
             {
-                sectionWidth = Screen.width / (numAsteroids + 1);
-
                 DrawAsteroids();
             }
         }
@@ -46,10 +45,12 @@ public class Spawn_Asteroids : MonoBehaviour
 
     void DrawAsteroids()
     {
+        float a = (screenWidth - numAsteroids * asteroidWidth) / (numAsteroids + 1);
+
         for (int i = 1; i < numAsteroids + 1; i++)
         {
-            float x = i * sectionWidth;
-            float worldX = cam.ScreenToWorldPoint(new Vector3(x, 0)).x;
+            float x = (i - (numAsteroids + 1) * 0.5f) * a;
+            float worldX = cam.ScreenToWorldPoint(new Vector3(screenWidth / 2 + x, 0)).x;
             GameObject clonedAsteroid = Instantiate(asteroid, new Vector3(worldX, asteroidY), asteroidRot);
             clonedAsteroid.GetComponent<SpriteRenderer>().enabled = true;
             asteroids.Add(clonedAsteroid);
