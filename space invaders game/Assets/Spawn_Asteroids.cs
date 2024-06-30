@@ -6,8 +6,11 @@ public class Spawn_Asteroids : MonoBehaviour
 {
     public GameObject asteroid;
     public Camera cam;
+    public TMPro.TextMeshProUGUI textMesh;
+    public Canvas canvas;
 
     public int numAsteroids = 3;
+    public int defHealth = 20;
 
     private Transform asteroidTrans;
     private float asteroidY;
@@ -16,6 +19,8 @@ public class Spawn_Asteroids : MonoBehaviour
     private int beforeNumAsteroids;
     private List<GameObject> asteroids = new List<GameObject>();
     private float asteroidWidth;
+    private Dictionary<GameObject, int> health = new Dictionary<GameObject, int>();
+    private Transform canvasT;
 
     // Start is called before the first frame update
     void Start()
@@ -24,6 +29,8 @@ public class Spawn_Asteroids : MonoBehaviour
         asteroidY = asteroidTrans.position.y;
         asteroidRot = asteroidTrans.rotation;
         asteroidWidth = asteroidTrans.localScale.x;
+
+        canvasT = canvas.transform;
     }
 
     // Update is called once per frame
@@ -54,6 +61,12 @@ public class Spawn_Asteroids : MonoBehaviour
             GameObject clonedAsteroid = Instantiate(asteroid, new Vector3(worldX, asteroidY), asteroidRot);
             clonedAsteroid.GetComponent<SpriteRenderer>().enabled = true;
             asteroids.Add(clonedAsteroid);
+            health[asteroid] = defHealth;
+
+            TMPro.TextMeshProUGUI cTextMesh = Instantiate(textMesh);
+            // cTextMesh.GetComponent<TMPro.TMP_Text>().enabled = true;
+            cTextMesh.transform.SetParent(canvasT);
+            cTextMesh.transform.position = Vector3.zero;
         }
     }
 
