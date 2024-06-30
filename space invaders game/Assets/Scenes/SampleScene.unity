@@ -635,6 +635,7 @@ MonoBehaviour:
   speed: 10
   fireRate: 4
   gBullet: {fileID: 116611392}
+  cam: {fileID: 519420031}
 --- !u!212 &1153118589
 SpriteRenderer:
   m_ObjectHideFlags: 0

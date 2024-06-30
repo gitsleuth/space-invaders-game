@@ -10,6 +10,7 @@ public class Controls : MonoBehaviour
     public float fireRate = 0.5f;
 
     public GameObject gBullet;
+    public Camera cam;
 
     private List<GameObject> bullets = new List<GameObject>();
     private float elapsed = 0;
@@ -41,6 +42,7 @@ public class Controls : MonoBehaviour
             bullet.transform.position = bullet.transform.position + dt * speed * bullet.transform.up;
 
             Bounds bulletBounds = bullet.GetComponent<CircleCollider2D>().bounds;
+            bool destroyed = false;
 
             for (int j = clones.Count - 1; j >= 0; j--)
             {
@@ -65,8 +67,24 @@ public class Controls : MonoBehaviour
 
                     Destroy(clone);
 
+                    destroyed = true;
+
                     break;
                 }
+            }
+
+            if (destroyed)
+            {
+                break;
+            }
+
+            Vector3 screenPos = cam.WorldToScreenPoint(bullet.transform.position + Vector3.down * bullet.transform.localScale.y);
+            float y = screenPos.y;
+
+            if (y > Screen.height)
+            {
+                bullets.RemoveAt(i);
+                Destroy(bullet);
             }
         }
 
@@ -82,7 +100,7 @@ public class Controls : MonoBehaviour
                 clone = Instantiate(gBullet, new Vector3(transform.position.x, gBullet.transform.position.y), gBullet.transform.rotation);
                 clone.GetComponent<SpriteRenderer>().enabled = true;
                 bullets.Add(clone);
-            };
+            }
         }
     }
 }
