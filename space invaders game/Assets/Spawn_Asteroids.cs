@@ -7,7 +7,7 @@ public class Spawn_Asteroids : MonoBehaviour
     public GameObject asteroid;
     public Camera cam;
     public TMPro.TextMeshProUGUI textMesh;
-    public Canvas canvas;
+    public GameObject parent;
 
     public int numAsteroids = 3;
     public int defHealth = 20;
@@ -29,8 +29,6 @@ public class Spawn_Asteroids : MonoBehaviour
         asteroidY = asteroidTrans.position.y;
         asteroidRot = asteroidTrans.rotation;
         asteroidWidth = asteroidTrans.localScale.x;
-
-        canvasT = canvas.transform;
     }
 
     // Update is called once per frame
@@ -64,9 +62,10 @@ public class Spawn_Asteroids : MonoBehaviour
             health[asteroid] = defHealth;
 
             TMPro.TextMeshProUGUI cTextMesh = Instantiate(textMesh);
-            // cTextMesh.GetComponent<TMPro.TMP_Text>().enabled = true;
-            cTextMesh.transform.SetParent(canvasT);
-            cTextMesh.transform.position = Vector3.zero;
+            cTextMesh.GetComponent<TMPro.TMP_Text>().enabled = true;
+            cTextMesh.transform.SetParent(parent.transform);
+            float sY = cam.WorldToScreenPoint(new Vector3(0, asteroidY)).y;
+            cTextMesh.transform.position = Vector3.up * (Screen.height - (Screen.height - sY)) + Vector3.right * (screenWidth / 2 + x);
         }
     }
 
