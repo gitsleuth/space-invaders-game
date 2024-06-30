@@ -11,15 +11,16 @@ public class Spawn_Asteroids : MonoBehaviour
 
     public int numAsteroids = 3;
     public int defHealth = 20;
+    public List<GameObject> asteroids = new List<GameObject>();
 
     private Transform asteroidTrans;
     private float asteroidY;
     private Quaternion asteroidRot;
     private float screenWidth = Screen.width;
     private int beforeNumAsteroids;
-    private List<GameObject> asteroids = new List<GameObject>();
     private float asteroidWidth;
     private Dictionary<GameObject, int> health = new Dictionary<GameObject, int>();
+    private Dictionary<GameObject, TMPro.TextMeshProUGUI> textMeshes = new Dictionary<GameObject, TMPro.TextMeshProUGUI>();
     private Transform canvasT;
 
     // Start is called before the first frame update
@@ -59,13 +60,14 @@ public class Spawn_Asteroids : MonoBehaviour
             GameObject clonedAsteroid = Instantiate(asteroid, new Vector3(worldX, asteroidY), asteroidRot);
             clonedAsteroid.GetComponent<SpriteRenderer>().enabled = true;
             asteroids.Add(clonedAsteroid);
-            health[asteroid] = defHealth;
+            health[clonedAsteroid] = defHealth;
 
             TMPro.TextMeshProUGUI cTextMesh = Instantiate(textMesh);
             cTextMesh.GetComponent<TMPro.TMP_Text>().enabled = true;
             cTextMesh.transform.SetParent(parent.transform);
             float sY = cam.WorldToScreenPoint(new Vector3(0, asteroidY)).y;
             cTextMesh.transform.position = Vector3.up * (Screen.height - (Screen.height - sY)) + Vector3.right * (screenWidth / 2 + x);
+            textMeshes[clonedAsteroid] = cTextMesh;
         }
     }
 
@@ -75,6 +77,23 @@ public class Spawn_Asteroids : MonoBehaviour
         {
             Destroy(asteroids[i]);
             asteroids.RemoveAt(i);
+        }
+    }
+
+    public void OnAsteroidHit(GameObject asteroid, int i)
+    {
+        health[asteroid] -= 1;
+        TMPro.TextMeshProUGUI textMesh = textMeshes[asteroid];
+        textMesh.text = health[asteroid].ToString();
+        if (health[asteroid] == 0)
+        {
+            Destroy(asteroid);
+            asteroids.RemoveAt(i);
+
+            Destroy(textMesh);
+            textMeshes.Remove(asteroid);
+
+            health.Remove(asteroid);
         }
     }
 }

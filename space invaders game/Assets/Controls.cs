@@ -5,6 +5,7 @@ using UnityEngine;
 public class Controls : MonoBehaviour
 {
     [SerializeField] Spawn_Enemies spawnEnemies;
+    [SerializeField] Spawn_Asteroids spawnAsteroids;
 
     public int speed = 10;
     public float fireRate = 0.5f;
@@ -17,6 +18,7 @@ public class Controls : MonoBehaviour
     private List<GameObject> clones;
     private Dictionary<GameObject, Vector3> startPositions;
     private Dictionary<GameObject, Vector3> endPositions;
+    private List<GameObject> asteroids;
 
     // Start is called before the first frame update
     void Start()
@@ -25,6 +27,8 @@ public class Controls : MonoBehaviour
 
         startPositions = spawnEnemies.startPositions;
         endPositions = spawnEnemies.endPositions;
+
+        asteroids = spawnAsteroids.asteroids;
     }
 
     // Update is called once per frame
@@ -66,6 +70,28 @@ public class Controls : MonoBehaviour
                     }
 
                     Destroy(clone);
+
+                    destroyed = true;
+
+                    break;
+                }
+            }
+
+            if (destroyed)
+            {
+                break;
+            }
+
+            for (int l = asteroids.Count - 1; l >= 0; l--)
+            {
+                GameObject asteroid = asteroids[l];
+                Bounds asteroidBounds = asteroid.GetComponent<CircleCollider2D>().bounds;
+                if (bulletBounds.Intersects(asteroidBounds))
+                {
+                    Destroy(bullet);
+                    bullets.RemoveAt(i);
+
+                    spawnAsteroids.OnAsteroidHit(asteroid, l);
 
                     destroyed = true;
 
