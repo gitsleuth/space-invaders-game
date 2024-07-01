@@ -12,6 +12,7 @@ public class Controls : MonoBehaviour
 
     public GameObject gBullet;
     public Camera cam;
+    public AudioSource explosionSFX;
 
     private List<GameObject> bullets = new List<GameObject>();
     private float elapsed = 0;
@@ -19,6 +20,7 @@ public class Controls : MonoBehaviour
     private Dictionary<GameObject, Vector3> startPositions;
     private Dictionary<GameObject, Vector3> endPositions;
     private List<GameObject> asteroids;
+    private AudioSource laserSFX;
 
     // Start is called before the first frame update
     void Start()
@@ -29,6 +31,8 @@ public class Controls : MonoBehaviour
         endPositions = spawnEnemies.endPositions;
 
         asteroids = spawnAsteroids.asteroids;
+
+        laserSFX = transform.GetComponentInChildren<AudioSource>();
     }
 
     // Update is called once per frame
@@ -69,9 +73,13 @@ public class Controls : MonoBehaviour
                         endPositions.Remove(clone);
                     }
 
-                    Destroy(clone);
+                    //Destroy(clone);
+
+                    clone.GetComponent<SpriteRenderer>().enabled = false;
 
                     destroyed = true;
+
+                    explosionSFX.Play();
 
                     break;
                 }
@@ -126,6 +134,8 @@ public class Controls : MonoBehaviour
                 clone = Instantiate(gBullet, new Vector3(transform.position.x, gBullet.transform.position.y), gBullet.transform.rotation);
                 clone.GetComponent<SpriteRenderer>().enabled = true;
                 bullets.Add(clone);
+
+                laserSFX.Play();
             }
         }
     }

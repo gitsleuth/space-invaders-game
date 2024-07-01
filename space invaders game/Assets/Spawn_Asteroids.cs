@@ -8,6 +8,8 @@ public class Spawn_Asteroids : MonoBehaviour
     public Camera cam;
     public TMPro.TextMeshProUGUI textMesh;
     public GameObject parent;
+    public AudioSource explosion2SFX;
+    public AudioSource asteroidHitSFX;
 
     public int numAsteroids = 3;
     public int defHealth = 20;
@@ -94,6 +96,10 @@ public class Spawn_Asteroids : MonoBehaviour
             textMeshes.Remove(asteroid);
 
             health.Remove(asteroid);
+
+            explosion2SFX.Play();
         }
+
+        asteroidHitSFX.Play();
     }
 }
