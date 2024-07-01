@@ -4,9 +4,12 @@ using UnityEngine;
 
 public class Spawn_Enemies : MonoBehaviour
 {
+    [SerializeField] BulletController bulletController;
+
     public GameObject enemy;
     public GameObject spawn;
     public Camera cam;
+    public GameObject gBullet;
 
     public int enemiesPerRow = 6;
     public int rows = 3;
@@ -14,19 +17,22 @@ public class Spawn_Enemies : MonoBehaviour
     public float moveInterval = 1.5f;
     public Dictionary<GameObject, Vector3> startPositions;
     public Dictionary<GameObject, Vector3> endPositions;
+    public float padding = 2;
+    public float moveDistance = 1;
+    public int speed = 6;
 
-    private int padding = 2;
     private bool spawned = false;
     private int enemies;
     private int enemiesPerRowBefore;
     private int rowsBefore;
     private float elapsed = 0;
-    private float moveDistance = 1;
     private float lerpElapsed = 0;
     private float moveDuration = 0.5f;
     private bool moving = false;
     private Vector3 direction = Vector3.right;
     private Vector3 nextDirection;
+    private Dictionary<GameObject, float> shootTimes = new Dictionary<GameObject, float>();
+    private List<GameObject> bullets = new List<GameObject>();
 
     // Start is called before the first frame update
     void Start()
@@ -66,11 +72,13 @@ public class Spawn_Enemies : MonoBehaviour
         //    SpawnEnemies();
         //}
 
-        elapsed += Time.deltaTime;
+        float dt = Time.deltaTime;
+
+        elapsed += dt;
 
         if (moving)
         {
-            lerpElapsed += Time.deltaTime;
+            lerpElapsed += dt;
         }
         else
         {
@@ -84,6 +92,22 @@ public class Spawn_Enemies : MonoBehaviour
             moving = true;
             StartCoroutine(MoveEnemies());
         };
+
+        foreach (GameObject enemy in clones)
+        {
+            if (!shootTimes.ContainsKey(enemy))
+            {
+                shootTimes.Add(enemy, Random.Range(1f, 60f));
+            }
+
+            shootTimes[enemy] -= dt;
+            while (shootTimes[enemy] <= 0)
+            {
+                shootTimes[enemy] = Random.Range(1f, 60f);
+
+                bulletController.SpawnBullet(enemy.transform.position + Vector3.down * 0.5f, -Vector3.up);
+            }
+        }
     }
 
     void SpawnEnemies()
@@ -95,12 +119,7 @@ public class Spawn_Enemies : MonoBehaviour
             float offset = ((i - row * enemiesPerRow) - (enemiesPerRow + 1) * 0.5f) * padding;
             GameObject clone;
             clone = Instantiate(enemy, new Vector3(spawn.transform.position.x + offset, spawn.transform.position.y - row * padding), enemy.transform.rotation);
-            SpriteRenderer renderer = clone.GetComponent<SpriteRenderer>();
-            renderer.enabled = true;
-            if (i == enemies)
-            {
-                renderer.color = Color.red;
-            }
+            clone.GetComponent<SpriteRenderer>().enabled = true;
             clones.Add(clone);
             if (i != enemies && i % enemiesPerRow == 0)
             {
