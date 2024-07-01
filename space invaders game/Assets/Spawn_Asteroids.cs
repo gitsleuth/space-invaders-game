@@ -90,7 +90,7 @@ public class Spawn_Asteroids : MonoBehaviour
             Destroy(asteroid);
             asteroids.RemoveAt(i);
 
-            Destroy(textMesh);
+            Destroy(textMesh.gameObject);
             textMeshes.Remove(asteroid);
 
             health.Remove(asteroid);
