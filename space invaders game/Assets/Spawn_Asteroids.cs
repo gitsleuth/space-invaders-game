@@ -60,14 +60,14 @@ public class Spawn_Asteroids : MonoBehaviour
             GameObject clonedAsteroid = Instantiate(asteroid, new Vector3(worldX, asteroidY), asteroidRot);
             clonedAsteroid.GetComponent<SpriteRenderer>().enabled = true;
             asteroids.Add(clonedAsteroid);
-            health[clonedAsteroid] = defHealth;
+            health.Add(clonedAsteroid, defHealth);
 
             TMPro.TextMeshProUGUI cTextMesh = Instantiate(textMesh);
             cTextMesh.GetComponent<TMPro.TMP_Text>().enabled = true;
             cTextMesh.transform.SetParent(parent.transform);
             float sY = cam.WorldToScreenPoint(new Vector3(0, asteroidY)).y;
             cTextMesh.transform.position = Vector3.up * (Screen.height - (Screen.height - sY)) + Vector3.right * (screenWidth / 2 + x);
-            textMeshes[clonedAsteroid] = cTextMesh;
+            textMeshes.Add(clonedAsteroid, cTextMesh);
         }
     }
 
