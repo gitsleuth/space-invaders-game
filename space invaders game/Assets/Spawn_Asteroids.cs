@@ -14,6 +14,8 @@ public class Spawn_Asteroids : MonoBehaviour
     public int numAsteroids = 3;
     public int defHealth = 20;
     public List<GameObject> asteroids = new List<GameObject>();
+    public Dictionary<GameObject, int> health = new Dictionary<GameObject, int>();
+    public Dictionary<GameObject, TMPro.TextMeshProUGUI> textMeshes = new Dictionary<GameObject, TMPro.TextMeshProUGUI>();
 
     private Transform asteroidTrans;
     private float asteroidY;
@@ -21,8 +23,6 @@ public class Spawn_Asteroids : MonoBehaviour
     private float screenWidth = Screen.width;
     private int beforeNumAsteroids;
     private float asteroidWidth;
-    private Dictionary<GameObject, int> health = new Dictionary<GameObject, int>();
-    private Dictionary<GameObject, TMPro.TextMeshProUGUI> textMeshes = new Dictionary<GameObject, TMPro.TextMeshProUGUI>();
     private Transform canvasT;
 
     // Start is called before the first frame update
@@ -80,26 +80,5 @@ public class Spawn_Asteroids : MonoBehaviour
             Destroy(asteroids[i]);
             asteroids.RemoveAt(i);
         }
-    }
-
-    public void OnAsteroidHit(GameObject asteroid, int i)
-    {
-        health[asteroid] -= 1;
-        TMPro.TextMeshProUGUI textMesh = textMeshes[asteroid];
-        textMesh.text = health[asteroid].ToString();
-        if (health[asteroid] == 0)
-        {
-            Destroy(asteroid);
-            asteroids.RemoveAt(i);
-
-            Destroy(textMesh.gameObject);
-            textMeshes.Remove(asteroid);
-
-            health.Remove(asteroid);
-
-            explosion2SFX.Play();
-        }
-
-        asteroidHitSFX.Play();
     }
 }
