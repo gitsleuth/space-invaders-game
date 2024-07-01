@@ -58,9 +58,10 @@ public class Controls : MonoBehaviour
 
                 if (bulletBounds.Intersects(clone.GetComponent<BoxCollider2D>().bounds))
                 {
-                    bullets.RemoveAt(i);
                     Destroy(bullet);
+                    bullets.RemoveAt(i);
 
+                    Destroy(clone);
                     clones.RemoveAt(j);
 
                     if (startPositions.ContainsKey(clone))
@@ -72,8 +73,6 @@ public class Controls : MonoBehaviour
                     {
                         endPositions.Remove(clone);
                     }
-
-                    //Destroy(clone);
 
                     clone.GetComponent<SpriteRenderer>().enabled = false;
 
