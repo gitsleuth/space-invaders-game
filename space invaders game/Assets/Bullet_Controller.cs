@@ -57,6 +57,8 @@ public class BulletController : MonoBehaviour
 
                 explosionSFX.Play();
 
+                spawnEnemies.OnEnemyDestroyed(data.Item3);
+
                 break;
             }
             (bool, GameObject, int) data2 = (CheckCollisions(bullet, i, bounds, typeof(CircleCollider2D), spawnAsteroids.asteroids, false));
