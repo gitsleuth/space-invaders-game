@@ -88,13 +88,13 @@ public class Spawn_Enemies : MonoBehaviour
             lerpElapsed = 0;
         };
 
-        //while (elapsed >= moveInterval)
-        //{
-        //    elapsed -= moveInterval;
+        while (elapsed >= moveInterval)
+        {
+            elapsed -= moveInterval;
 
-        //    moving = true;
-        //    StartCoroutine(MoveEnemies());
-        //};
+            moving = true;
+            StartCoroutine(MoveEnemies());
+        };
 
         for (int i = 0; i < enemies; i++)
         {
@@ -224,12 +224,19 @@ public class Spawn_Enemies : MonoBehaviour
 
             while (column > enemiesPerRow - 1)
             {
-                column = newI - enemiesPerRow;
+                column -= enemiesPerRow;
             }
 
             int newI = i - enemiesPerRow;
 
-            print(column);
+            while (newI >= 0 && clones[newI] == null)
+            {
+                newI -= enemiesPerRow;
+            }
+
+            if (newI < column) {
+                return;
+            }
 
             frontIs[column] = newI;
         }
