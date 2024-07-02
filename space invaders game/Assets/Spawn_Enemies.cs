@@ -88,29 +88,34 @@ public class Spawn_Enemies : MonoBehaviour
             lerpElapsed = 0;
         };
 
-        while (elapsed >= moveInterval)
-        {
-            elapsed -= moveInterval;
+        //while (elapsed >= moveInterval)
+        //{
+        //    elapsed -= moveInterval;
 
-            moving = true;
-            StartCoroutine(MoveEnemies());
-        };
+        //    moving = true;
+        //    StartCoroutine(MoveEnemies());
+        //};
 
         for (int i = 0; i < enemies; i++)
         {
-            if (!shootTimes.ContainsKey(enemy))
-            {
-                shootTimes.Add(enemy, Random.Range(1f, 60f));
-            }
+            GameObject enemy = clones[i];
 
-            shootTimes[enemy] -= dt;
-            while (shootTimes[enemy] <= 0)
+            if (enemy)
             {
-                shootTimes[enemy] = Random.Range(1f, 60f);
-
-                if (frontIs.Contains(i))
+                if (!shootTimes.ContainsKey(enemy))
                 {
-                    bulletController.SpawnBullet(enemy.transform.position + Vector3.down * 0.5f, -Vector3.up);
+                    shootTimes.Add(enemy, Random.Range(1f, 3f));
+                }
+
+                shootTimes[enemy] -= dt;
+                while (shootTimes[enemy] <= 0)
+                {
+                    shootTimes[enemy] = Random.Range(1f, 3f);
+
+                    if (frontIs.Contains(i))
+                    {
+                        bulletController.SpawnBullet(enemy.transform.position + Vector3.down * 0.5f, -Vector3.up);
+                    }
                 }
             }
         }
@@ -136,7 +141,6 @@ public class Spawn_Enemies : MonoBehaviour
             if (i > enemiesPerRow * (rows - 1))
             {
                 frontIs.Add(i - 1);
-                print(i - 1);
                 clone.GetComponent<SpriteRenderer>().color = Color.red;
             }
         }
@@ -147,7 +151,10 @@ public class Spawn_Enemies : MonoBehaviour
         for (int i = 0; i < enemies; i++)
         {
             GameObject clone = clones[i];
-            startPositions[clone] = clone.transform.position;
+            if (clone)
+            {
+                startPositions[clone] = clone.transform.position;
+            }
         };
 
         bool moved = false;
@@ -162,9 +169,12 @@ public class Spawn_Enemies : MonoBehaviour
                 for (int i = 0; i < enemies; i++)
                 {
                     GameObject clone = clones[i];
-                    Vector3 startPos = startPositions[clone];
-                    clone.transform.position = Vector3.Lerp(startPos, startPos + direction * moveDistance, lerpElapsed / moveDuration);
-                    endPositions[clone] = clone.transform.position;
+                    if (clone)
+                    {
+                        Vector3 startPos = startPositions[clone];
+                        clone.transform.position = Vector3.Lerp(startPos, startPos + direction * moveDistance, lerpElapsed / moveDuration);
+                        endPositions[clone] = clone.transform.position;
+                    }
                 };
             }
 
@@ -208,15 +218,20 @@ public class Spawn_Enemies : MonoBehaviour
 
     public void OnEnemyDestroyed(int i)
     {
-        if (i > enemiesPerRow * (rows - 1) - 1)
+        if (frontIs.Contains(i))
         {
-            print("On first row!");
+            int column = i;
+
+            while (column > enemiesPerRow - 1)
+            {
+                column = newI - enemiesPerRow;
+            }
 
             int newI = i - enemiesPerRow;
 
-            frontIs[i - enemiesPerRow * (rows - 1)] = newI;
+            print(column);
+
+            frontIs[column] = newI;
         }
     }
-
-
 }

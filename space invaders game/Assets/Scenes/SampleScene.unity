@@ -1422,7 +1422,7 @@ MonoBehaviour:
   spawnAsteroids: {fileID: 666001173}
   bulletController: {fileID: 2464386}
   speed: 6
-  fireRate: 1
+  fireRate: 4
   gBullet: {fileID: 116611392}
   cam: {fileID: 519420031}
   explosionSFX: {fileID: 1896031210}

@@ -138,6 +138,43 @@ public class BulletController : MonoBehaviour
         return (collided, collidedWith, rJ);
     }
 
+    private (bool, GameObject, int) CheckCollisions(GameObject bullet, int i, Bounds bounds, System.Type boundsType, GameObject[] objects, bool destroyObject)
+    {
+        bool collided = false;
+        GameObject collidedWith = default;
+        int rJ = 0;
+
+        for (int j = objects.Length - 1; j >= 0; j--)
+        {
+            GameObject obj = objects[j];
+
+            if (obj == null)
+            {
+                continue;
+            }
+
+            if (bounds.Intersects((obj.GetComponent(boundsType) as Collider2D).bounds))
+            {
+                Destroy(bullet);
+                bullets.RemoveAt(i);
+
+                if (destroyObject)
+                {
+                    Destroy(obj);
+                    objects[j] = null;
+                }
+
+                collided = true;
+                collidedWith = obj;
+                rJ = j;
+
+                break;
+            }
+        }
+
+        return (collided, collidedWith, rJ);
+    }
+
     private bool CheckCollision(GameObject bullet, int i, Bounds bounds, System.Type boundsType, GameObject obj, bool destroyObject)
     {
         if (bounds.Intersects((obj.GetComponent(boundsType) as Collider2D).bounds))
