@@ -35,7 +35,7 @@ public class BulletController : MonoBehaviour
 
             Bounds bounds = bullet.GetComponent<CircleCollider2D>().bounds;
 
-            (bool, GameObject) data = CheckCollisions(bullet, i, bounds, 0, spawnEnemies.clones);
+            (bool, GameObject, int) data = CheckCollisions(bullet, i, bounds, typeof(BoxCollider2D), spawnEnemies.clones, true);
             if (data.Item1)
             {
                 Dictionary<GameObject, Vector3> startPositions = spawnEnemies.startPositions;
@@ -59,10 +59,11 @@ public class BulletController : MonoBehaviour
 
                 break;
             }
-            (bool, GameObject) data2 = (CheckCollisions(bullet, i, bounds, 1, spawnAsteroids.asteroids));
+            (bool, GameObject, int) data2 = (CheckCollisions(bullet, i, bounds, typeof(CircleCollider2D), spawnAsteroids.asteroids, false));
             if (data2.Item1)
             {
                 GameObject asteroid = data2.Item2;
+                int j = data2.Item3;
 
                 spawnAsteroids.health[asteroid] -= 1;
 
@@ -71,7 +72,7 @@ public class BulletController : MonoBehaviour
                 if (spawnAsteroids.health[asteroid] == 0)
                 {
                     Destroy(asteroid);
-                    spawnAsteroids.asteroids.RemoveAt(i);
+                    spawnAsteroids.asteroids.RemoveAt(j);
 
                     Destroy(textMesh.gameObject);
                     spawnAsteroids.textMeshes.Remove(asteroid);
@@ -85,7 +86,7 @@ public class BulletController : MonoBehaviour
 
                 break;
             }
-            if (CheckCollision(bullet, i, bounds, controls.gameObject))
+            if (CheckCollision(bullet, i, bounds, typeof(BoxCollider2D), controls.gameObject, false))
             {
                 break;
             }
@@ -103,41 +104,49 @@ public class BulletController : MonoBehaviour
         directions.Add(clone, direction);
     }
 
-    private (bool, GameObject) CheckCollisions(GameObject bullet, int i, Bounds bounds, int boundsType, List<GameObject> objects)
+    private (bool, GameObject, int) CheckCollisions(GameObject bullet, int i, Bounds bounds, System.Type boundsType, List<GameObject> objects, bool destroyObject)
     {
         bool collided = false;
         GameObject collidedWith = default;
+        int rJ = 0;
 
         for (int j = objects.Count - 1; j >= 0; j--)
         {
-            if (bounds.Intersects(objects[j].GetComponent<boundsType>().bounds))
+            if (bounds.Intersects((objects[j].GetComponent(boundsType) as Collider2D).bounds))
             {
                 Destroy(bullet);
                 bullets.RemoveAt(i);
 
                 GameObject obj = objects[j];
 
-                Destroy(obj);
-                objects.RemoveAt(j);
+                if (destroyObject)
+                {
+                    Destroy(obj);
+                    objects.RemoveAt(j);
+                }
 
                 collided = true;
                 collidedWith = obj;
+                rJ = j;
 
                 break;
             }
         }
 
-        return (collided, collidedWith);
+        return (collided, collidedWith, rJ);
     }
 
-    private bool CheckCollision(GameObject bullet, int i, Bounds bounds, GameObject obj)
+    private bool CheckCollision(GameObject bullet, int i, Bounds bounds, System.Type boundsType, GameObject obj, bool destroyObject)
     {
-        if (bounds.Intersects(obj.GetComponent<CircleCollider2D>().bounds))
+        if (bounds.Intersects((obj.GetComponent(boundsType) as Collider2D).bounds))
         {
             Destroy(bullet);
             bullets.RemoveAt(i);
 
-            Destroy(obj);
+            if (destroyObject)
+            {
+                Destroy(obj);
+            }
 
             return true;
         }
