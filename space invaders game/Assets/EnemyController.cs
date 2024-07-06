@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Spawn_Enemies : MonoBehaviour
+public class EnemyController : MonoBehaviour
 {
     [SerializeField] BulletController bulletController;
 
@@ -20,9 +20,10 @@ public class Spawn_Enemies : MonoBehaviour
     public float padding = 2;
     public float moveDistance = 1;
     public int speed = 6;
+    public int enemies;
+    public bool updateEnemies = false;
 
     private bool spawned = false;
-    private int enemies;
     private int enemiesPerRowBefore;
     private int rowsBefore;
     private float elapsed = 0;
@@ -47,8 +48,6 @@ public class Spawn_Enemies : MonoBehaviour
 
         startPositions = new Dictionary<GameObject, Vector3>();
         endPositions = new Dictionary<GameObject, Vector3>();
-
-        SpawnEnemies();
     }
 
     // Update is called once per frame
@@ -75,53 +74,56 @@ public class Spawn_Enemies : MonoBehaviour
         //    SpawnEnemies();
         //}
 
-        float dt = Time.deltaTime;
-
-        elapsed += dt;
-
-        if (moving)
+        if (updateEnemies)
         {
-            lerpElapsed += dt;
-        }
-        else
-        {
-            lerpElapsed = 0;
-        };
+            float dt = Time.deltaTime;
 
-        while (elapsed >= moveInterval)
-        {
-            elapsed -= moveInterval;
+            elapsed += dt;
 
-            moving = true;
-            StartCoroutine(MoveEnemies());
-        };
-
-        for (int i = 0; i < enemies; i++)
-        {
-            GameObject enemy = clones[i];
-
-            if (enemy)
+            if (moving)
             {
-                if (!shootTimes.ContainsKey(enemy))
-                {
-                    shootTimes.Add(enemy, Random.Range(1f, 3f));
-                }
+                lerpElapsed += dt;
+            }
+            else
+            {
+                lerpElapsed = 0;
+            };
 
-                shootTimes[enemy] -= dt;
-                while (shootTimes[enemy] <= 0)
-                {
-                    shootTimes[enemy] = Random.Range(1f, 3f);
+            while (elapsed >= moveInterval)
+            {
+                elapsed -= moveInterval;
 
-                    if (frontIs.Contains(i))
+                moving = true;
+                StartCoroutine(MoveEnemies());
+            };
+
+            for (int i = 0; i < enemies; i++)
+            {
+                GameObject enemy = clones[i];
+
+                if (enemy)
+                {
+                    if (!shootTimes.ContainsKey(enemy))
                     {
-                        bulletController.SpawnBullet(enemy.transform.position + Vector3.down * 0.5f, -Vector3.up);
+                        shootTimes.Add(enemy, Random.Range(1f, 60f));
+                    }
+
+                    shootTimes[enemy] -= dt;
+                    while (shootTimes[enemy] <= 0)
+                    {
+                        shootTimes[enemy] = Random.Range(1f, 60f);
+
+                        if (frontIs.Contains(i))
+                        {
+                            bulletController.SpawnBullet(enemy.transform.position + Vector3.down * 0.5f, -Vector3.up);
+                        }
                     }
                 }
             }
         }
     }
 
-    void SpawnEnemies()
+    public void SpawnEnemies()
     {
         int row = 0;
 
@@ -144,6 +146,9 @@ public class Spawn_Enemies : MonoBehaviour
                 clone.GetComponent<SpriteRenderer>().color = Color.red;
             }
         }
+
+        updateEnemies = true;
+        print("Test");
     }
 
     IEnumerator MoveEnemies()
@@ -159,7 +164,7 @@ public class Spawn_Enemies : MonoBehaviour
 
         bool moved = false;
 
-        while (!moved)
+        while (!moved && updateEnemies)
         {
             if (lerpElapsed >= moveDuration)
             {
@@ -169,7 +174,7 @@ public class Spawn_Enemies : MonoBehaviour
                 for (int i = 0; i < enemies; i++)
                 {
                     GameObject clone = clones[i];
-                    if (clone)
+                    if (clone != null)
                     {
                         Vector3 startPos = startPositions[clone];
                         clone.transform.position = Vector3.Lerp(startPos, startPos + direction * moveDistance, lerpElapsed / moveDuration);

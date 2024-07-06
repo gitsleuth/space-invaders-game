@@ -46,7 +46,7 @@ public class Spawn_Asteroids : MonoBehaviour
 
             if (numAsteroids > 0)
             {
-                DrawAsteroids();
+                //DrawAsteroids();
             }
         }
     }

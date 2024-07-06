@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class Controls : MonoBehaviour
 {
-    [SerializeField] Spawn_Enemies spawnEnemies;
-    [SerializeField] Spawn_Asteroids spawnAsteroids;
     [SerializeField] BulletController bulletController;
 
     public int speed = 10;

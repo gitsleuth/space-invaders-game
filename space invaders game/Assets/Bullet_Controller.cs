@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BulletController : MonoBehaviour
 {
-    [SerializeField] Spawn_Enemies spawnEnemies;
+    [SerializeField] EnemyController enemyController;
     [SerializeField] Spawn_Asteroids spawnAsteroids;
     [SerializeField] Controls controls;
 
@@ -35,11 +35,11 @@ public class BulletController : MonoBehaviour
 
             Bounds bounds = bullet.GetComponent<CircleCollider2D>().bounds;
 
-            (bool, GameObject, int) data = CheckCollisions(bullet, i, bounds, typeof(BoxCollider2D), spawnEnemies.clones, true);
+            (bool, GameObject, int) data = CheckCollisions(bullet, i, bounds, typeof(BoxCollider2D), enemyController.clones, true);
             if (data.Item1)
             {
-                Dictionary<GameObject, Vector3> startPositions = spawnEnemies.startPositions;
-                Dictionary<GameObject, Vector3> endPositions = spawnEnemies.endPositions;
+                Dictionary<GameObject, Vector3> startPositions = enemyController.startPositions;
+                Dictionary<GameObject, Vector3> endPositions = enemyController.endPositions;
 
                 GameObject clone = data.Item2;
 
@@ -57,7 +57,7 @@ public class BulletController : MonoBehaviour
 
                 explosionSFX.Play();
 
-                spawnEnemies.OnEnemyDestroyed(data.Item3);
+                enemyController.OnEnemyDestroyed(data.Item3);
 
                 break;
             }
